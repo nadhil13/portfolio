@@ -46,7 +46,14 @@ const Contact = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const { isAuthenticated } = useAdmin();
+  // Safe context access with fallback
+  let isAuthenticated = false;
+  try {
+    const adminContext = useAdmin();
+    isAuthenticated = adminContext?.isAuthenticated || false;
+  } catch (err) {
+    console.warn('Admin context not available:', err.message);
+  }
 
   // Validation functions
   const validateEmail = (email) => {
@@ -70,11 +77,21 @@ const Contact = () => {
     return { isValid: true, message: `Great message! (${message.length}/500)` };
   };
 
-  // Load comments dari Firebase (dengan fallback localStorage)
+  // Load comments dari Firebase (dengan fallback localStorage) - SAFE VERSION
   useEffect(() => {
     const loadComments = async () => {
-      const comments = await getComments();
-      setComments(comments);
+      try {
+        const loadedComments = await getComments();
+        if (Array.isArray(loadedComments)) {
+          setComments(loadedComments);
+        } else {
+          setComments([]);
+        }
+      } catch (error) {
+        console.error('Error loading comments:', error);
+        // Fallback to empty array
+        setComments([]);
+      }
     };
     
     loadComments();
