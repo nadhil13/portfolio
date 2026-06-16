@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import Preloader from './components/Preloader.jsx';
 import './index.css';
+import './styles/form-enhancements.css';
 
 // Error Boundary Component yang lebih robust
 class ErrorBoundary extends React.Component {

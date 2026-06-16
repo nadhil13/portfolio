@@ -11,11 +11,22 @@ const firebaseConfig = {
     messagingSenderId: "189892092974",
     appId: "1:189892092974:web:e9e53f5b49c363aab0ebbf",
     measurementId: "G-F630K5D7L3"
-  };  
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase with error handling
+let app;
+let db;
 
-// Initialize Cloud Firestore and get a reference to the service
-export const db = getFirestore(app);
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  console.log('✅ Firebase initialized successfully');
+} catch (error) {
+  console.error('❌ Firebase initialization error:', error);
+  // Create a dummy db object to prevent app from crashing
+  db = null;
+}
+
+export { app };
+export { db };
 export default app;
