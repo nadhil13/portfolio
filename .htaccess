@@ -1,0 +1,275 @@
+# ==========================================
+# HTACCESS FOR NADHIL PORTFOLIO - COMPLETE
+# React SPA with Vite Build - Niagahoster Optimized
+# ==========================================
+
+# Enable Rewrite Engine
+RewriteEngine On
+RewriteBase /
+
+# Set default page
+DirectoryIndex index.html
+
+# ==========================================
+# FORCE HTTPS (Uncomment after SSL setup)
+# ==========================================
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ==========================================
+# SPA ROUTING - REACT ROUTER SUPPORT
+# ==========================================
+# Handle React Router - redirect all non-file requests to index.html
+# Exclude API endpoints and specific file types
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !\.(js|css|png|jpg|jpeg|gif|ico|svg|pdf|ttf|otf|woff|woff2|glb|json|webmanifest)$
+RewriteRule . /index.html [L]
+
+# ==========================================
+# ERROR PAGES
+# ==========================================
+ErrorDocument 404 /index.html
+ErrorDocument 403 /index.html
+ErrorDocument 500 /index.html
+
+# ==========================================
+# SECURITY HEADERS
+# ==========================================
+<IfModule mod_headers.c>
+    # Basic Security Headers
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove server info
+    Header unset Server
+    Header unset X-Powered-By
+    
+    # CORS for API (if needed)
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# ==========================================
+# COMPRESSION (GZIP)
+# ==========================================
+<IfModule mod_deflate.c>
+    # Enable compression for text files
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+    
+    # Don't compress already compressed files
+    SetEnvIfNoCase Request_URI \
+        \.(?:gif|jpe?g|png|zip|gz|bz2|sit|rar|pdf|glb|ttf|otf|woff|woff2)$ no-gzip dont-vary
+</IfModule>
+
+# ==========================================
+# BROWSER CACHING - OPTIMIZED FOR VITE
+# ==========================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # HTML files - Short cache for SPA
+    ExpiresByType text/html "access plus 1 hour"
+    
+    # Vite hashed assets - Long cache (1 year)
+    <FilesMatch "index-[a-zA-Z0-9_-]+\.(js|css)$">
+        ExpiresDefault "access plus 1 year"
+        Header set Cache-Control "public, immutable"
+    </FilesMatch>
+    
+    # Other JavaScript and CSS
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # Images - Portfolio images
+    ExpiresByType image/png "access plus 6 months"
+    ExpiresByType image/jpg "access plus 6 months"
+    ExpiresByType image/jpeg "access plus 6 months"
+    ExpiresByType image/gif "access plus 6 months"
+    ExpiresByType image/svg+xml "access plus 6 months"
+    ExpiresByType image/webp "access plus 6 months"
+    ExpiresByType image/ico "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # Fonts - Custom fonts
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/truetype "access plus 1 year"
+    ExpiresByType font/opentype "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+    
+    # Documents - CV and Certificates
+    ExpiresByType application/pdf "access plus 1 month"
+    
+    # 3D Models
+    ExpiresByType model/gltf-binary "access plus 3 months"
+    
+    # JSON files - Data files
+    ExpiresByType application/json "access plus 1 day"
+    
+    # Web App Manifest
+    ExpiresByType application/manifest+json "access plus 1 week"
+    
+    # Default fallback
+    ExpiresDefault "access plus 1 month"
+</IfModule>
+
+# Alternative cache headers for servers without mod_expires
+<IfModule mod_headers.c>
+    # Vite hashed assets
+    <FilesMatch "index-[a-zA-Z0-9_-]+\.(js|css)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+    
+    # HTML files
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "max-age=3600, public, must-revalidate"
+    </FilesMatch>
+    
+    # Images
+    <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico)$">
+        Header set Cache-Control "max-age=15552000, public"
+    </FilesMatch>
+    
+    # Fonts
+    <FilesMatch "\.(woff|woff2|ttf|otf|eot)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+    
+    # PDFs and documents
+    <FilesMatch "\.(pdf)$">
+        Header set Cache-Control "max-age=2592000, public"
+    </FilesMatch>
+    
+    # 3D Models
+    <FilesMatch "\.(glb|gltf)$">
+        Header set Cache-Control "max-age=7776000, public"
+    </FilesMatch>
+    
+    # JSON files
+    <FilesMatch "\.(json)$">
+        Header set Cache-Control "max-age=86400, public"
+    </FilesMatch>
+</IfModule>
+
+# ==========================================
+# PERFORMANCE OPTIMIZATIONS
+# ==========================================
+# Remove ETags (we use cache headers instead)
+FileETag None
+
+# Disable server signature
+ServerSignature Off
+
+# ==========================================
+# FILE ACCESS CONTROL
+# ==========================================
+# Protect sensitive files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Protect config files
+<FilesMatch "(package\.json|vite\.config\.js|\.env|\.git)">
+    Require all denied
+</FilesMatch>
+
+# Allow access to required files
+<FilesMatch "\.(html|js|css|png|jpg|jpeg|gif|svg|ico|pdf|ttf|otf|woff|woff2|glb|json|webmanifest)$">
+    Require all granted
+</FilesMatch>
+
+# ==========================================
+# MIME TYPES - COMPLETE SET
+# ==========================================
+<IfModule mod_mime.c>
+    # Web fonts
+    AddType font/woff .woff
+    AddType font/woff2 .woff2
+    AddType font/truetype .ttf
+    AddType font/opentype .otf
+    AddType application/font-woff .woff
+    AddType application/font-woff2 .woff2
+    AddType application/vnd.ms-fontobject .eot
+    
+    # 3D Models
+    AddType model/gltf-binary .glb
+    AddType model/gltf+json .gltf
+    
+    # Modern image formats
+    AddType image/webp .webp
+    AddType image/avif .avif
+    AddType image/svg+xml .svg
+    
+    # JSON
+    AddType application/json .json
+    AddType application/ld+json .jsonld
+    
+    # Web App Manifest
+    AddType application/manifest+json .webmanifest
+    
+    # JavaScript modules
+    AddType text/javascript .mjs
+    
+    # CSS
+    AddType text/css .css
+</IfModule>
+
+# ==========================================
+# SPECIFIC OPTIMIZATIONS FOR YOUR ASSETS
+# ==========================================
+# Large image files optimization
+<FilesMatch "(BGZENBGIJObulat|ZAINFIX|belakang|depan)\.(png|jpg|jpeg)$">
+    Header set Cache-Control "max-age=31536000, public, immutable"
+</FilesMatch>
+
+# Certificate files - allow hotlinking for downloads
+<FilesMatch "certificates/.*\.(pdf|png)$">
+    Header unset X-Frame-Options
+    Header set X-Frame-Options SAMEORIGIN
+</FilesMatch>
+
+# Physics and large JS files
+<FilesMatch "(physics-|gaussian-splat-|ui-|process-|opentype-)\w+\.js$">
+    Header set Cache-Control "max-age=31536000, public, immutable"
+</FilesMatch>
+
+# ==========================================
+# REDIRECT RULES (Optional)
+# ==========================================
+# Redirect old URLs if needed
+# RewriteRule ^old-page$ /new-page [R=301,L]
+
+# Force non-www (uncomment if needed)
+# RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+# RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# ==========================================
+# DEBUG MODE (Remove in production)
+# ==========================================
+# Uncomment for debugging
+# RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+# LogLevel alert rewrite:trace3
+
+# ==========================================
+# END OF CONFIGURATION
+# ==========================================

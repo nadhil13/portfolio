@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pesan Diterima</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            background-color: #f4f4f4; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        }
+        .header { 
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+        }
+        .header h1 { 
+            margin: 0; 
+            font-size: 24px; 
+            font-weight: 600; 
+        }
+        .content { 
+            padding: 30px; 
+        }
+        .success-badge { 
+            background: linear-gradient(135deg, #4CAF50, #45a049); 
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-weight: 600; 
+        }
+        .section { 
+            margin: 25px 0; 
+            padding: 20px; 
+            border-radius: 10px; 
+            border-left: 4px solid; 
+        }
+        .confirmation-info { 
+            background: #e8f5e8; 
+            border-left-color: #28a745; 
+        }
+        .next-steps { 
+            background: #fff3cd; 
+            border-left-color: #ffc107; 
+        }
+        .contact-info { 
+            background: #d1ecf1; 
+            border-left-color: #17a2b8; 
+        }
+        .section h3 { 
+            margin: 0 0 15px 0; 
+            font-size: 18px; 
+            font-weight: 600; 
+        }
+        .message-summary { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #dee2e6; 
+            margin-top: 10px; 
+            font-style: italic; 
+        }
+        .timeline { 
+            background: #e9ecef; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0; 
+        }
+        .timeline h3 { 
+            color: #495057; 
+            margin: 0 0 15px 0; 
+        }
+        .timeline-item { 
+            display: flex; 
+            align-items: center; 
+            margin: 10px 0; 
+            color: #495057; 
+        }
+        .timeline-icon { 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-right: 15px; 
+            font-size: 14px; 
+        }
+        .completed { 
+            background: #28a745; 
+            color: white; 
+        }
+        .pending { 
+            background: #ffc107; 
+            color: #333; 
+        }
+        .footer { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            text-align: center; 
+            color: #666; 
+            font-size: 12px; 
+        }
+        .social-links { 
+            text-align: center; 
+            margin: 20px 0; 
+        }
+        .social-links a { 
+            display: inline-block; 
+            margin: 0 10px; 
+            color: #667eea; 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+        .social-links a:hover { 
+            color: #4facfe; 
+        }
+        @media (max-width: 600px) {
+            .container { margin: 10px; }
+            .content { padding: 20px; }
+            .timeline-item { flex-direction: column; text-align: center; }
+            .timeline-icon { margin: 0 0 10px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>✅ Pesan Berhasil Dikirim!</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">Terima kasih telah menghubungi saya</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Success Badge -->
+            <div class="success-badge">
+                🎉 Halo {{to_name}}, pesan Anda sudah saya terima dengan baik!
+            </div>
+
+            <!-- Confirmation Info -->
+            <div class="section confirmation-info">
+                <h3>📋 Konfirmasi Pesan</h3>
+                <p>Pesan Anda telah berhasil dikirim melalui website portfolio saya pada <strong>{{submission_date}}</strong>.</p>
+                
+                <div class="message-summary">
+                    <strong>Preview pesan Anda:</strong><br>
+                    "{{message_preview}}"
+                    <span style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                        Dikirim dari: {{to_email}}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline">
+                <h3>⏱️ What Happens Next:</h3>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">✅</div>
+                    <div>
+                        <strong>Pesan Diterima</strong><br>
+                        <small>Pesan Anda sudah masuk ke inbox saya</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">📖</div>
+                    <div>
+                        <strong>Review & Analysis</strong><br>
+                        <small>Saya akan membaca dan menganalisis pesan Anda</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">📧</div>
+                    <div>
+                        <strong>Personal Response</strong><br>
+                        <small>Response personal akan dikirim ke email Anda</small>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">🤝</div>
+                    <div>
+                        <strong>Follow Up Discussion</strong><br>
+                        <small>Diskusi lebih lanjut jika diperlukan</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="section next-steps">
+                <h3>⚡ Yang Perlu Anda Lakukan:</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #856404;">
+                    <li><strong>Tunggu email response</strong> dari saya dalam 24 jam</li>
+                    <li><strong>Cek inbox & spam folder</strong> untuk memastikan tidak terlewat</li>
+                    <li><strong>Siapkan detail tambahan</strong> jika ada yang perlu didiskusikan</li>
+                    <li><strong>Jangan ragu hubungi langsung</strong> jika urgent</li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="section contact-info">
+                <h3>📞 Kontak Langsung (Jika Urgent):</h3>
+                <div style="color: #0c5460;">
+                    <p style="margin: 5px 0;">
+                        <strong>📧 Email:</strong> {{owner_email}}<br>
+                        <strong>📱 WhatsApp:</strong> {{owner_whatsapp}}<br>
+                        <strong>⏰ Response Time:</strong> Biasanya dalam 24 jam
+                    </p>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="social-links">
+                <h4 style="color: #333; margin: 0 0 15px 0;">🌐 Connect with me:</h4>
+                <a href="https://linkedin.com/in/muhammad-nadhil" target="_blank" title="LinkedIn">💼 LinkedIn</a>
+                <a href="https://github.com/nadhilarsy" target="_blank" title="GitHub">💻 GitHub</a>
+                <a href="https://instagram.com/nadhilarsy" target="_blank" title="Instagram">📸 Instagram</a>
+                <a href="https://nadhilportfolio.com" target="_blank" title="Portfolio">🌐 Website</a>
+            </div>
+
+            <!-- Thank You Note -->
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 30px 0;">
+                <h3 style="color: white; margin: 0 0 10px 0;">🙏 Terima Kasih!</h3>
+                <p style="margin: 0; opacity: 0.9;">
+                    Saya menghargai kepercayaan Anda untuk menghubungi saya. 
+                    Setiap pesan akan saya baca dan response dengan serius.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>📧 This email was automatically generated from Muhammad Nadhil's portfolio website.</p>
+            <p>🌐 Full Stack Developer | Passionate about creating amazing digital experiences</p>
+            <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                <small>Jika ada masalah dengan email ini, silakan hubungi: {{owner_email}}</small>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Minimal .htaccess for React SPA
+RewriteEngine On
+RewriteBase /
+
+# Handle React Router
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+# Error handling
+ErrorDocument 404 /index.html

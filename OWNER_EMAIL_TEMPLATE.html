@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Project Inquiry</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            background-color: #f4f4f4; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+        }
+        .header h1 { 
+            margin: 0; 
+            font-size: 24px; 
+            font-weight: 600; 
+        }
+        .content { 
+            padding: 30px; 
+        }
+        .alert { 
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24); 
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-weight: 600; 
+        }
+        .section { 
+            margin: 25px 0; 
+            padding: 20px; 
+            border-radius: 10px; 
+            border-left: 4px solid; 
+        }
+        .client-info { 
+            background: #e8f5e8; 
+            border-left-color: #28a745; 
+        }
+        .project-details { 
+            background: #e3f2fd; 
+            border-left-color: #2196f3; 
+        }
+        .whatsapp-section { 
+            background: linear-gradient(135deg, #25D366, #128C7E); 
+            color: white; 
+            text-align: center; 
+            margin: 30px 0; 
+            padding: 25px; 
+            border-radius: 15px; 
+            border: none; 
+        }
+        .template-preview { 
+            background: rgba(255,255,255,0.1); 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+        }
+        .template-text { 
+            background: rgba(255,255,255,0.9); 
+            color: #333; 
+            padding: 12px; 
+            border-radius: 6px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 13px; 
+            white-space: pre-line; 
+            text-align: left; 
+            line-height: 1.4; 
+        }
+        .whatsapp-btn { 
+            display: inline-block; 
+            background: #ffffff; 
+            color: #25D366; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-top: 15px; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        .whatsapp-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15); 
+        }
+        .section h3 { 
+            margin: 0 0 15px 0; 
+            font-size: 18px; 
+            font-weight: 600; 
+        }
+        .info-row { 
+            margin: 8px 0; 
+            padding: 8px 0; 
+            border-bottom: 1px solid rgba(0,0,0,0.1); 
+        }
+        .info-row:last-child { 
+            border-bottom: none; 
+        }
+        .label { 
+            font-weight: 600; 
+            color: #555; 
+        }
+        .description-box { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 10px; 
+            border: 1px solid #ddd; 
+            font-style: italic; 
+        }
+        .footer { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            text-align: center; 
+            color: #666; 
+            font-size: 12px; 
+        }
+        .timestamp { 
+            background: #ffeaa7; 
+            color: #2d3436; 
+            padding: 10px; 
+            border-radius: 5px; 
+            text-align: center; 
+            font-weight: 600; 
+            margin-bottom: 20px; 
+        }
+        @media (max-width: 600px) {
+            .container { margin: 10px; }
+            .content { padding: 20px; }
+            .whatsapp-btn { padding: 12px 25px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 New {{form_type}}</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">Portfolio Website Notification</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Alert -->
+            <div class="alert">
+                📩 New project inquiry from {{from_name}}!
+            </div>
+
+            <!-- Timestamp -->
+            <div class="timestamp">
+                📅 Received: {{submission_date}}
+            </div>
+
+            <!-- Client Information -->
+            <div class="section client-info">
+                <h3>👤 Client Information</h3>
+                <div class="info-row">
+                    <span class="label">👨‍💼 Name:</span> {{from_name}}
+                </div>
+                <div class="info-row">
+                    <span class="label">📧 Email:</span> {{from_email}}
+                </div>
+                <div class="info-row">
+                    <span class="label">📞 Phone:</span> {{phone}}
+                </div>
+                <div class="info-row">
+                    <span class="label">🏢 Company:</span> {{company}}
+                </div>
+                <div class="info-row">
+                    <span class="label">🌐 Website:</span> {{website}}
+                </div>
+            </div>
+
+            <!-- Project Details -->
+            <div class="section project-details">
+                <h3>📋 Project Details</h3>
+                <div class="info-row">
+                    <span class="label">🎯 Project Type:</span> {{project_type}}
+                </div>
+                <div class="info-row">
+                    <span class="label">💰 Budget:</span> {{budget}}
+                </div>
+                <div class="info-row">
+                    <span class="label">⏰ Timeline:</span> {{timeline}}
+                </div>
+                <div class="info-row">
+                    <span class="label">📅 Preferred Date:</span> {{preferred_date}}
+                </div>
+                <div class="info-row">
+                    <span class="label">🕐 Preferred Time:</span> {{preferred_time}}
+                </div>
+                <div class="info-row">
+                    <span class="label">💬 Meeting Type:</span> {{meeting_type}}
+                </div>
+                <div class="info-row">
+                    <span class="label">🌍 Timezone:</span> {{timezone}}
+                </div>
+                <div class="info-row">
+                    <span class="label">📢 How they heard about us:</span> {{hear_about_us}}
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <span class="label">📝 Project Description:</span>
+                    <div class="description-box">
+                        {{description}}
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <span class="label">📌 Additional Notes:</span>
+                    <div class="description-box">
+                        {{additional_notes}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp Quick Response -->
+            <div class="whatsapp-section">
+                <h3 style="color: white; margin: 0 0 20px 0; font-size: 20px;">📱 Quick WhatsApp Response</h3>
+                
+                <p style="color: rgba(255,255,255,0.9); margin: 0 0 15px 0;">
+                    Click the button below to respond via WhatsApp with a professional template message:
+                </p>
+                
+                <div class="template-preview">
+                    <p style="color: white; font-size: 14px; margin: 0 0 10px 0; font-weight: 600;">
+                        📋 Preview pesan yang akan dikirim:
+                    </p>
+                    <div class="template-text">{{whatsapp_template}}</div>
+                </div>
+                
+                <a href="{{whatsapp_link}}" class="whatsapp-btn">
+                    📱 Send WhatsApp Response
+                </a>
+                
+                <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 15px 0 0 0;">
+                    Klik tombol di atas untuk membuka WhatsApp dengan template pesan siap kirim
+                </p>
+            </div>
+
+            <!-- Action Items -->
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #856404; margin: 0 0 15px 0;">⚡ Next Steps:</h3>
+                <ul style="color: #856404; margin: 0; padding-left: 20px;">
+                    <li>Review project details above</li>
+                    <li>Click WhatsApp button for instant response</li>
+                    <li>Schedule meeting if needed</li>
+                    <li>Follow up within 24 hours</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>📧 This email was automatically generated from your portfolio website contact form.</p>
+            <p>🌐 Muhammad Nadhil Portfolio | Full Stack Developer</p>
+        </div>
+    </div>
+</body>
+</html>
