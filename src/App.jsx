@@ -48,18 +48,30 @@ const SafeSpline = ({ scene, className, onLoadStateChange, ...props }) => {
   const [retryCount, setRetryCount] = useState(0);
   const [loadProgress, setLoadProgress] = useState(0);
   const [connectionSpeed, setConnectionSpeed] = useState('unknown');
-  const maxRetries = 3;
+  const maxRetries = 2; // Reduced from 3 to 2
 
-  // Detect connection speed
+  // Detect connection speed with safety checks
   useEffect(() => {
-    if ('connection' in navigator) {
-      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      setConnectionSpeed(connection?.effectiveType || 'unknown');
+    try {
+      if (typeof navigator !== 'undefined' && 'connection' in navigator) {
+        const connection = navigator?.connection || navigator?.mozConnection || navigator?.webkitConnection;
+        if (connection?.effectiveType) {
+          setConnectionSpeed(connection.effectiveType);
+        }
+      }
+    } catch (err) {
+      console.warn('Connection speed detection failed:', err);
+      setConnectionSpeed('unknown');
     }
   }, []);
 
   const loadSpline = useCallback(async (attempt = 1) => {
     try {
+      // Skip on slow connections or errors
+      if (connectionSpeed === 'slow-2g') {
+        throw new Error('Connection too slow for Spline');
+      }
+
       setLoading(true);
       setError(false);
       setLoadProgress(0);
@@ -77,27 +89,86 @@ const SafeSpline = ({ scene, className, onLoadStateChange, ...props }) => {
 
       // Load Spline with timeout
       const timeoutPromise = new Promise((_, reject) => {
-        const timeout = connectionSpeed === 'slow-2g' ? 15000 : connectionSpeed === '2g' ? 10000 : 7000;
-        setTimeout(() => reject(new Error('Loading timeout')), timeout);
+        const timeout = connectionSpeed === '2g' ? 8000 : 5000;
+        setTimeout(() => reject(new Error('Spline loading timeout')), timeout);
       });
 
-      const loadPromise = import('@splinetool/react-spline').then(module => {
-        clearInterval(progressInterval);
-        setLoadProgress(100);
-        return module.default;
-      });
+      const loadPromise = (async () => {
+        try {
+          const module = await import('@splinetool/react-spline');
+          clearInterval(progressInterval);
+          setLoadProgress(100);
+          return module.default;
+        } catch (importErr) {
+          clearInterval(progressInterval);
+          throw new Error(`Failed to import Spline: ${importErr.message}`);
+        }
+      })();
 
       const SplineComponent = await Promise.race([loadPromise, timeoutPromise]);
       
       setSpline(() => SplineComponent);
       setError(false);
+      setLoading(false);
       onLoadStateChange?.({ loading: false, error: false, loaded: true });
       
-      } catch (err) {
-      console.warn(`Spline loading attempt ${attempt} failed:`, err);
+    } catch (err) {
+      console.warn(`Spline loading attempt ${attempt} failed:`, err.message);
       setLoadProgress(0);
       
       if (attempt < maxRetries) {
+        setRetryCount(attempt);
+        // Retry dengan delay
+        setTimeout(() => {
+          loadSpline(attempt + 1);
+        }, 1000 * attempt);
+      } else {
+        // Max retries reached, show fallback
+        setLoading(false);
+        setError(true);
+        onLoadStateChange?.({ loading: false, error: true, loaded: false });
+      }
+    }
+  }, [connectionSpeed, onLoadStateChange]);
+
+  useEffect(() => {
+    loadSpline();
+  }, [loadSpline]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent animate-pulse"></div>
+        <div className="z-10 text-center">
+          <div className="w-12 h-12 border-3 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-2"></div>
+          <p className="text-cyan-400 text-sm">Loading 3D Model...</p>
+          {loadProgress > 0 && <p className="text-gray-400 text-xs mt-1">{Math.floor(loadProgress)}%</p>}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !Spline) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl flex items-center justify-center relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent group-hover:from-cyan-500/10 transition-all"></div>
+        <div className="z-10 text-center">
+          <div className="text-4xl mb-3">🎨</div>
+          <p className="text-gray-400 text-sm">3D Model Not Available</p>
+          <p className="text-gray-500 text-xs mt-1">Check your connection and refresh</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Spline 
+      scene={scene} 
+      className={className}
+      {...props}
+    />
+  );
+};
         // Exponential backoff for retries
         const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
         setTimeout(() => {
