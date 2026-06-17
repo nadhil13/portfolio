@@ -14,7 +14,7 @@
     "@eslint/config-array": "^0.21.0",
     "@react-three/drei": "^9.114.6",
     "@react-three/fiber": "^8.17.14",
-    "@react-three/rapier": "^2.1.0",
+    "@react-three/rapier": "^1.5.0",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.10.39",
     "clsx": "^2.1.1",
