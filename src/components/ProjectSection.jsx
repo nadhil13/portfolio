@@ -1,6 +1,6 @@
 // src/components/ProjectSection.jsx
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   FaExternalLinkAlt, FaReact, FaNodeJs, FaHtml5, FaCss3Alt, 
   FaJsSquare, FaTools, FaFigma, FaGithub, FaTimes, FaDownload
@@ -270,11 +270,7 @@ const CertificateCard = ({ cert, onClick }) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="group relative cursor-pointer"
-            whileHover={{ y: -8 }}
-            onClick={() => onClick(cert)}
-        >
+            
             <div className="relative h-64 sm:h-72 rounded-card-xl overflow-hidden shadow-card-md bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-400/30 hover:shadow-glow-cyan-sm transition-all duration-500">
                 <div className="absolute inset-0">
                     <LazyImage
@@ -652,7 +648,8 @@ function ProjectSection() {
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="p-6 md:p-10"
-            >
+            
+              >
               {activeTab === 'Projects' && (
                 <>
                   <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-8">
@@ -661,6 +658,7 @@ function ProjectSection() {
                       variant={projectCategory === 'Web/Apps' ? 'primary' : 'outline'}
                       size="md"
                       className={`w-full sm:w-auto ${projectCategory !== 'Web/Apps' ? 'text-primary-200 hover:text-white' : ''}`}
+                      whileHover={{
                     >
                       Web/Apps
                     </InteractiveButton>
@@ -677,14 +675,11 @@ function ProjectSection() {
                     {filteredProjects.length > 0 ? (
                       filteredProjects.map((p, i) => (
                         <motion.div
-                          key={i}
-                          initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{ 
-                            duration: 0.5, 
-                            delay: i * 0.1,
-                            ease: "easeOut" 
-                          }}
+                          key={i}                          
+                          initial={{ opacity: 0, y: 44, scale: 0.92, filter: "blur(6px)"                                   }}
+                          animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}       
+                          whileHover={{ scale: 1.02 }} 
+                          transition={{ type: "spring", stiffness: 110, damping: 19, mass: 0.9, delay: i * 0.08 }}
                           className="h-full"
                         >
                           <ProjectCard project={p} />
