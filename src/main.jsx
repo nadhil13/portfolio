@@ -7,7 +7,6 @@ import './index.css';
 import './lib/scrollMotion';
 import './styles/form-enhancements.css';
 
-
 // Error Boundary Component yang lebih robust
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -15,16 +14,14 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { hasError: true, error };
   }
-
 
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error);
     console.error('Error info:', errorInfo);
-    
+
     // Khusus untuk Three.js geometry errors
     if (error.message && error.message.includes('geometry')) {
       console.log('Three.js geometry error detected, attempting recovery...');
@@ -33,13 +30,12 @@ class ErrorBoundary extends React.Component {
         window.location.reload();
       }, 2000);
     }
-    
+
     this.setState({
       error: error,
       errorInfo: errorInfo
     });
   }
-
 
   render() {
     if (this.state.hasError) {
@@ -48,8 +44,8 @@ class ErrorBoundary extends React.Component {
           <div className="text-center max-w-md">
             <h1 className="text-2xl font-bold mb-4 text-cyan-400">Oops! Something went wrong.</h1>
             <p className="text-gray-400 mb-6">Terjadi kesalahan saat memuat aplikasi. Silakan coba refresh halaman.</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="px-6 py-3 bg-cyan-500 text-black rounded-lg hover:bg-cyan-400 transition-colors font-semibold"
             >
               Refresh Page
@@ -67,124 +63,148 @@ class ErrorBoundary extends React.Component {
       );
     }
 
-
     return this.props.children;
-
-}
+  }
 }
 
 /**
- * Komponen wrapper utama ...
+ * Komponen wrapper utama yang mengelola status pemuatan
+ * dan beralih antara Preloader dan aplikasi utama.
  */
 const Main = () => {
-  const [preloaderFinished, setPreloaderFinished] = useState(false);
-  const [globalError, setGlobalError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Loading Timeout
-  useEffect(() => {
-    const loadingTimeout = setTimeout(() => {
-      if (!preloaderFinished) {
-        console.warn('Loading timeout - forcing app to show');
-        setPreloaderFinished(true);
-      }
-    }, 15000);
-
-    return () => clearTimeout(loadingTimeout);
-  }, [preloaderFinished]);
-
-  // Preloader finish
+  // Fungsi callback yang akan dipanggil oleh Preloader saat animasinya selesai
   const handlePreloaderFinished = () => {
-    console.log('Preloader finished, showing main app');
-    setPreloaderFinished(true);
+    console.log('Preloader finished, loading main app...');
+    setIsLoading(false);
   };
 
-  // Global error handling
+  // Fallback jika ada error
   const handleError = (error) => {
-    console.error('Global error caught:', error);
-    setGlobalError(error);
+    console.error('Main component error:', error);
+    setErrorMessage(error?.message || 'Unknown error occurred');
+    setHasError(true);
+    setIsLoading(false);
   };
 
-  // Error handler untuk uncaught errors
-  const handleUnhandledError = (event) => {
-    console.error('Unhandled error:', event.error);
-    setGlobalError(event.error);
-  };
-
-  const handleUnhandledRejection = (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
-    setGlobalError(new Error(event.reason?.toString() || 'Unknown error'));
-  };
-
-  // Setup global error listeners
+  // Timeout untuk memastikan aplikasi tidak stuck di preloader
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        console.log('Main component timeout, forcing app load');
+        setIsLoading(false);
+      }
+    }, 10000); // 10 detik maksimal
+
+    return () => clearTimeout(timeoutId);
+  }, [isLoading]);
+
+  // Error handling untuk unhandled errors
+  useEffect(() => {
+    const handleUnhandledError = (event) => {
+      console.error('Unhandled error:', event.error);
+
+      // Khusus untuk Three.js geometry errors
+      if (event.error && event.error.message && event.error.message.includes('geometry')) {
+        console.log('Three.js geometry error detected, attempting recovery...');
+        event.preventDefault(); // Prevent default error handling
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        return;
+      }
+
+      handleError(event.error);
+    };
+
+    const handleUnhandledRejection = (event) => {
+      console.error('Unhandled promise rejection:', event.reason);
+
+      // Khusus untuk Three.js geometry errors dalam promise
+      if (event.reason && event.reason.message && event.reason.message.includes('geometry')) {
+        console.log('Three.js geometry error in promise detected, attempting recovery...');
+        event.preventDefault(); // Prevent default error handling
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        return;
+      }
+
+      handleError(event.reason);
+    };
+
     window.addEventListener('error', handleUnhandledError);
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
     return () => {
       window.removeEventListener('error', handleUnhandledError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
 
-  if (globalError) {
+  if (hasError) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#0a0a0a',
-        color: '#fff',
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Oops! Something went wrong</h1>
-        <p style={{ marginBottom: '2rem', opacity: 0.8 }}>{globalError.message || 'An unexpected error occurred'}</p>
-        <button
-          onClick={() => {
-            setGlobalError(null);
-            window.location.reload();
-          }}
-          style={{
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#22c55e',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '0.5rem',
-            cursor: 'pointer',
-            fontSize: '1rem'
-          }}
-        >
-          Reload Page
-        </button>
+      <div className="min-h-screen bg-[#060010] flex items-center justify-center text-white p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold mb-4 text-cyan-400">Loading Error</h1>
+          <p className="text-gray-400 mb-6">Gagal memuat aplikasi. Silakan coba lagi.</p>
+          {errorMessage && (
+            <p className="text-sm text-red-400 mb-4">{errorMessage}</p>
+          )}
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-cyan-500 text-black rounded-lg hover:bg-cyan-400 transition-colors font-semibold"
+          >
+            Reload Page
+          </button>
+        </div>
       </div>
-    );
-  };
-
-  if (!preloaderFinished) {
-    return (
-      <ErrorBoundary>
-        <Preloader onComplete={handlePreloaderFinished} />
-      </ErrorBoundary>
     );
   }
 
   return (
-    <ErrorBoundary>
-      <App onError={handleError} />
-    </ErrorBoundary>
+    <>
+      {isLoading ? (
+        <Preloader onFinished={handlePreloaderFinished} />
+      ) : (
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      )}
+    </>
   );
 };
 
-// Wrapper komponen untuk memastikan Preloader dan App di-mount dalam mode strict
+// Wrapper untuk menangani error saat render
 const AppWrapper = () => {
-  return (
-    <ErrorBoundary>
-      <Main />
-    </ErrorBoundary>
-  );
+  try {
+    return (
+      // Sementara nonaktifkan StrictMode untuk debugging
+      <ErrorBoundary>
+        <Main />
+      </ErrorBoundary>
+    );
+  } catch (error) {
+    console.error('Critical error during render:', error);
+    return (
+      <div className="min-h-screen bg-[#060010] flex items-center justify-center text-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Critical Error</h1>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-cyan-500 text-black rounded hover:bg-cyan-400"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 };
 
-// Render aplikasi
+// Render komponen Main ke dalam DOM dengan error boundary
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<AppWrapper />);
