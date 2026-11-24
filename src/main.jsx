@@ -69,3 +69,122 @@ class ErrorBoundary extends React.Component {
 
 
     return this.props.children;
+
+}
+}
+
+/**
+ * Komponen wrapper utama ...
+ */
+const Main = () => {
+  const [preloaderFinished, setPreloaderFinished] = useState(false);
+  const [globalError, setGlobalError] = useState(null);
+
+  // Loading Timeout
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => {
+      if (!preloaderFinished) {
+        console.warn('Loading timeout - forcing app to show');
+        setPreloaderFinished(true);
+      }
+    }, 15000);
+
+    return () => clearTimeout(loadingTimeout);
+  }, [preloaderFinished]);
+
+  // Preloader finish
+  const handlePreloaderFinished = () => {
+    console.log('Preloader finished, showing main app');
+    setPreloaderFinished(true);
+  };
+
+  // Global error handling
+  const handleError = (error) => {
+    console.error('Global error caught:', error);
+    setGlobalError(error);
+  };
+
+  // Error handler untuk uncaught errors
+  const handleUnhandledError = (event) => {
+    console.error('Unhandled error:', event.error);
+    setGlobalError(event.error);
+  };
+
+  const handleUnhandledRejection = (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    setGlobalError(new Error(event.reason?.toString() || 'Unknown error'));
+  };
+
+  // Setup global error listeners
+  useEffect(() => {
+    window.addEventListener('error', handleUnhandledError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', handleUnhandledError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
+  if (globalError) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#0a0a0a',
+        color: '#fff',
+        padding: '2rem',
+        textAlign: 'center'
+      }}>
+        <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Oops! Something went wrong</h1>
+        <p style={{ marginBottom: '2rem', opacity: 0.8 }}>{globalError.message || 'An unexpected error occurred'}</p>
+        <button
+          onClick={() => {
+            setGlobalError(null);
+            window.location.reload();
+          }}
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#22c55e',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+        >
+          Reload Page
+        </button>
+      </div>
+    );
+  };
+
+  if (!preloaderFinished) {
+    return (
+      <ErrorBoundary>
+        <Preloader onComplete={handlePreloaderFinished} />
+      </ErrorBoundary>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <App onError={handleError} />
+    </ErrorBoundary>
+  );
+};
+
+// Wrapper komponen untuk memastikan Preloader dan App di-mount dalam mode strict
+const AppWrapper = () => {
+  return (
+    <ErrorBoundary>
+      <Main />
+    </ErrorBoundary>
+  );
+};
+
+// Render aplikasi
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<AppWrapper />);
