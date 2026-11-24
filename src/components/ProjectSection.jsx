@@ -270,7 +270,11 @@ const CertificateCard = ({ cert, onClick }) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="group relative cursor-pointer"
+            whileHover={{ y: -8 }}
+            onClick={() => onClick(cert)}
+        >
             <div className="relative h-64 sm:h-72 rounded-card-xl overflow-hidden shadow-card-md bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-400/30 hover:shadow-glow-cyan-sm transition-all duration-500">
                 <div className="absolute inset-0">
                     <LazyImage
@@ -648,8 +652,7 @@ function ProjectSection() {
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="p-6 md:p-10"
-            
-              >
+            >
               {activeTab === 'Projects' && (
                 <>
                   <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-8">
@@ -658,7 +661,6 @@ function ProjectSection() {
                       variant={projectCategory === 'Web/Apps' ? 'primary' : 'outline'}
                       size="md"
                       className={`w-full sm:w-auto ${projectCategory !== 'Web/Apps' ? 'text-primary-200 hover:text-white' : ''}`}
-                      whileHover={{
                     >
                       Web/Apps
                     </InteractiveButton>
