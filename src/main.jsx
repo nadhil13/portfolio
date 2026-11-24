@@ -15,7 +15,7 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+    return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -133,7 +133,7 @@ const Main = () => {
         return;
       }
 
-      handleError(event.reason);
+      handleError(new Error(event.reason));
     };
 
     window.addEventListener('error', handleUnhandledError);
